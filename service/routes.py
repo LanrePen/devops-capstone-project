@@ -61,7 +61,12 @@ def create_accounts():
 # LIST ALL ACCOUNTS
 ######################################################################
 
+
 # ... place you code here to LIST accounts ...
+@app.route("/accounts", methods=["GET"])
+def list_accounts():
+    accounts = Account.all()
+    return jsonify([account.serialize() for account in accounts]), 200
 
 
 ######################################################################
@@ -69,6 +74,12 @@ def create_accounts():
 ######################################################################
 
 # ... place you code here to READ an account ...
+@app.route("/accounts/<int:account_id>", methods=["GET"])
+def read_account(account_id):
+    account = Account.find(account_id)
+    if not account:
+        return jsonify({"error": "Account not found"}), 404
+    return jsonify(account.serialize()), 200
 
 
 ######################################################################
@@ -76,6 +87,15 @@ def create_accounts():
 ######################################################################
 
 # ... place you code here to UPDATE an account ...
+@app.route("/accounts/<int:account_id>", methods=["PUT"])
+def update_account(account_id):
+    account = Account.find(account_id)
+    if not account:
+        return jsonify({"error": "Account not found"}),404
+    
+    account.deserialize(request.get_json())
+    account.update()
+    return jsonify(account.serialize()), 200
 
 
 ######################################################################
@@ -83,6 +103,12 @@ def create_accounts():
 ######################################################################
 
 # ... place you code here to DELETE an account ...
+@app.route("/accounts/<int:account_id>", methods=["DELETE"])
+def delete_account(account_id):
+    account = Account.find(account_id)
+    if account:
+        account.delete()
+    return "", 204
 
 
 ######################################################################
